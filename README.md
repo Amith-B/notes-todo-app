@@ -24,6 +24,12 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 Builds the app for production to the `build` folder.\
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
+#### To change the build path tp server folder, add .env file in root path with below content
+
+```
+BUILD_PATH='./server/build'
+```
+
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
