@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
+// api routes
 app.use("/api", routes);
 
 const port = process.env.PORT || 5000;
