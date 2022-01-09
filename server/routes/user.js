@@ -3,6 +3,6 @@ const { getUser } = require("../controllers/user");
 
 const router = Router();
 
-router.get("/:userId", getUser);
+router.get("/profile", getUser);
 
 module.exports = router;
