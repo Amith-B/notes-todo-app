@@ -4,18 +4,77 @@ const expressJwt = require("express-jwt");
 const User = require("../models/user");
 
 exports.signup = (req, res) => {
-  // TODO
-  res.send(req.params);
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      error: errors
+        .array()
+        .reduce((prev, data) => ({ ...prev, [data.param]: data.msg }), {}),
+    });
+  }
+  const { name, email, password } = req.body;
+  const user = new User({
+    name,
+    email,
+    password,
+  });
+
+  user.save((err, data) => {
+    if (err) {
+      return res.status(400).json({
+        err: err.hasOwnProperty("index")
+          ? "Email already registered"
+          : "NOT able to save user in DB",
+      });
+    }
+    res.json({
+      name: data.name,
+      email: data.email,
+      id: data._id,
+    });
+  });
 };
 
 exports.signin = (req, res) => {
-  // TODO
-  res.send(req.params);
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      error: errors
+        .array()
+        .reduce((prev, data) => ({ ...prev, [data.param]: data.msg }), {}),
+    });
+  }
+  const { email, password } = req.body;
+
+  User.findOne({ email }, (error, user) => {
+    if (error || !user) {
+      return res.status(400).json({ error: "USER email doesn't exist" });
+    }
+    if (!user.authenticate(password)) {
+      return res.status(401).json({ error: "Email and password don't match" });
+    }
+
+    const token = jwt.sign({ _id: user._id }, process.env.SECRET, {
+      expiresIn: "2 days",
+    });
+    res.cookie("token", token, {
+      expire: new Date().getTime() + 2 * 24 * 60 * 60 * 1000,
+    });
+    const { _id, name, email } = user;
+    return res.json({
+      token,
+      user: { _id, name, email },
+    });
+  });
 };
 
 exports.signout = (req, res) => {
-  // TODO
-  res.send(req.params);
+  res.clearCookie("token");
+  res.json({
+    message: "Signout success",
+  });
 };
 
 //protected routes

@@ -7,7 +7,7 @@ const todoSchema = new mongoose.Schema(
       type: ObjectId,
       ref: "User",
     },
-    title: { type: Strin, maxlength: 32, trim: true },
+    title: { type: String, maxlength: 32, trim: true },
     content: { type: String, maxlength: 1000, trim: true },
     start: { type: Date, required: true },
     end: { type: Date, required: true },

@@ -9,8 +9,8 @@ const {
 
 const router = Router();
 
-router.get("/signup", validateNewUser, signup);
-router.get("/signin", validateUser, signin);
+router.post("/signup", validateNewUser, signup);
+router.post("/signin", validateUser, signin);
 router.get("/signout", signout);
 
 module.exports = router;

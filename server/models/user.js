@@ -30,14 +30,14 @@ userSchema
   .set(function (plainpassword) {
     this._password = plainpassword;
     this.salt = uuidv4();
-    this.encry_password = this.securePassword(password);
+    this.encry_password = this.securePassword(plainpassword);
   })
   .get(function () {
     return this._password;
   });
 
 userSchema.methods = {
-  autheticate: function (plainpassword) {
+  authenticate: function (plainpassword) {
     return this.securePassword(plainpassword) === this.encry_password;
   },
 

@@ -1,8 +1,17 @@
 const { Router } = require("express");
-const { getNotes } = require("../controllers/note");
+const {
+  addNotes,
+  getNotesColors,
+  getNotes,
+  getNotesById,
+} = require("../controllers/note");
+const { isSignedIn, isAuthenticated } = require("../controllers/auth");
 
 const router = Router();
 
-router.get("/:noteId", getNotes);
+router.get("/colors", getNotesColors);
+router.get("/", isSignedIn, isAuthenticated, getNotes);
+router.post("/", isSignedIn, isAuthenticated, addNotes);
+router.get("/:noteId", isSignedIn, isAuthenticated, getNotesById);
 
 module.exports = router;

@@ -11,6 +11,6 @@ const router = Router();
 router.use("/auth", authRoutes);
 router.use("/user", isSignedIn, isAuthenticated, userRoutes);
 router.use("/todo", isSignedIn, isAuthenticated, todoRoutes);
-router.use("/notes", isSignedIn, isAuthenticated, notesRoutes);
+router.use("/notes", notesRoutes);
 
 module.exports = router;
