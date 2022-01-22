@@ -20,7 +20,7 @@ mongoose
     console.log("DB CONNECTED");
   });
 
-//Middlewares
+// Middlewares
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(cors());
