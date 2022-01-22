@@ -1,7 +1,6 @@
 const User = require("../models/user");
 
 exports.getUserById = (req, res) => {
-  // TODO
   const {
     profile: { _id },
     params: { userId },
