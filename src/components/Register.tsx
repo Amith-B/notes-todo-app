@@ -13,9 +13,10 @@ function Register() {
     <div
       style={{
         height: "100%",
-        margin: "auto",
-        width: "fit-content",
-        padding: 20,
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Paper
@@ -23,6 +24,8 @@ function Register() {
         sx={{
           display: "flex",
           flexDirection: "column",
+          padding: "20px",
+          borderRadius: 2,
         }}
       >
         <TextField
@@ -85,17 +88,19 @@ function Register() {
           <Button variant="contained" sx={{ margin: "10px", width: "100%" }}>
             Register
           </Button>
-          <Button variant="outlined" sx={{ margin: "10px", width: "100%" }}>
-            <Link
-              style={{
-                textDecoration: "none",
-                color: "unset",
-              }}
-              to="/login"
-            >
+          <Link
+            style={{
+              textDecoration: "none",
+              color: "unset",
+              margin: "10px",
+              width: "100%",
+            }}
+            to="/login"
+          >
+            <Button variant="outlined" sx={{ width: "100%" }}>
               login
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </Box>
       </Paper>
     </div>

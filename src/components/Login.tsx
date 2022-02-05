@@ -6,15 +6,46 @@ import PasswordIcon from "@mui/icons-material/Password";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import http from "./../helpers/httpService";
+import CircularProgress from "@mui/material/CircularProgress";
+import { SIGNIN } from "../models/Api";
 
 function Login() {
+  const [loginDetails, setLoginDetails] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateDetails = (currentData: {
+    email?: string;
+    password?: string;
+  }) => {
+    setLoginDetails((prevData) => ({
+      ...prevData,
+      ...currentData,
+    }));
+  };
+
+  const login = async () => {
+    setIsLoading(true);
+    try {
+      const response = await http.post(SIGNIN, loginDetails);
+      console.log(loginDetails, response);
+    } catch (error) {}
+    setIsLoading(false);
+  };
+
   return (
     <div
       style={{
         height: "100%",
-        margin: "auto",
-        width: "fit-content",
-        padding: 20,
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Paper
@@ -22,6 +53,8 @@ function Login() {
         sx={{
           display: "flex",
           flexDirection: "column",
+          padding: "20px",
+          borderRadius: 2,
         }}
       >
         <TextField
@@ -29,6 +62,8 @@ function Login() {
           size="small"
           label="Email"
           type="email"
+          value={loginDetails.email}
+          onChange={(event) => updateDetails({ email: event.target.value })}
           InputProps={{
             endAdornment: (
               <InputAdornment position="start">
@@ -47,6 +82,8 @@ function Login() {
           size="small"
           label="Password"
           type="password"
+          value={loginDetails.password}
+          onChange={(event) => updateDetails({ password: event.target.value })}
           InputProps={{
             endAdornment: (
               <InputAdornment position="start">
@@ -65,20 +102,31 @@ function Login() {
             justifyContent: "space-between",
           }}
         >
-          <Button variant="contained" sx={{ margin: "10px", width: "100%" }}>
+          <Button
+            variant="contained"
+            sx={{ margin: "10px", width: "100%" }}
+            onClick={login}
+            disabled={isLoading}
+          >
             Login
+            {isLoading && (
+              <CircularProgress size={16} sx={{ marginLeft: "10px" }} />
+            )}
           </Button>
-          <Button variant="outlined" sx={{ margin: "10px", width: "100%" }}>
-            <Link
-              style={{
-                textDecoration: "none",
-                color: "unset",
-              }}
-              to="/register"
-            >
+
+          <Link
+            style={{
+              textDecoration: "none",
+              color: "unset",
+              margin: "10px",
+              width: "100%",
+            }}
+            to="/register"
+          >
+            <Button variant="outlined" sx={{ width: "100%" }}>
               Register
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </Box>
       </Paper>
     </div>
