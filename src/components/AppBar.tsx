@@ -7,11 +7,11 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import MenuIcon from "@mui/icons-material/Menu";
+import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
 
 const pages = [
   {
@@ -24,6 +24,39 @@ const settings = [
   { name: "Profile", link: "/profile" },
   { name: "Logout", link: "/logout" },
 ];
+
+function CustomLink({
+  children,
+  to,
+  textColor,
+  ...props
+}: LinkProps & { textColor?: { active: string; inactive: string } }) {
+  let resolved = useResolvedPath(to);
+  let match = useMatch({ path: resolved.pathname, end: true });
+
+  return (
+    <div>
+      <Link
+        style={{
+          textDecoration: "none",
+          background: match ? "orange" : "unset",
+          padding: "10px 16px",
+          fontSize: "1.2rem",
+          color: textColor
+            ? match
+              ? textColor?.["active"]
+              : textColor?.["inactive"]
+            : "white",
+          borderRadius: "12px",
+        }}
+        to={to}
+        {...props}
+      >
+        {children}
+      </Link>
+    </div>
+  );
+}
 
 const AppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -49,7 +82,7 @@ const AppBar = () => {
   };
 
   return (
-    <TopBar position="static">
+    <TopBar position="static" sx={{ zIndex: 1 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Typography
@@ -63,7 +96,12 @@ const AppBar = () => {
             }}
           >
             <BorderColorIcon />
-            <Typography variant="h6" noWrap component="div">
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ cursor: "default" }}
+            >
               NoteIt
             </Typography>
           </Typography>
@@ -98,7 +136,13 @@ const AppBar = () => {
             >
               {pages.map((page) => (
                 <MenuItem key={page.name} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page.name}</Typography>
+                  <CustomLink
+                    key={page.name}
+                    to={page.link}
+                    textColor={{ active: "white", inactive: "black" }}
+                  >
+                    {page.name}
+                  </CustomLink>
                 </MenuItem>
               ))}
             </Menu>
@@ -120,13 +164,9 @@ const AppBar = () => {
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
-              <Button
-                key={page.name}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
+              <CustomLink key={page.name} to={page.link}>
                 {page.name}
-              </Button>
+              </CustomLink>
             ))}
           </Box>
 
