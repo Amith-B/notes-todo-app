@@ -8,7 +8,7 @@ exports.getUserById = (req, res) => {
 
   if (_id != userId) {
     return res.status(403).send({
-      err: "Request forbidden",
+      error: "Request forbidden",
     });
   }
 

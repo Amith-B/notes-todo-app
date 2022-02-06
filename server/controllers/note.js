@@ -18,7 +18,7 @@ exports.addNotes = (req, res) => {
   notes.save((err, data) => {
     if (err) {
       return res.status(400).json({
-        err: "Unable to save notes",
+        error: "Unable to save notes",
       });
     }
     res.json(data);

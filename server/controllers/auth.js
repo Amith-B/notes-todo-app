@@ -23,7 +23,7 @@ exports.signup = (req, res) => {
   user.save((err, data) => {
     if (err) {
       return res.status(400).json({
-        err: err.hasOwnProperty("index")
+        error: err.hasOwnProperty("index")
           ? "Email already registered"
           : "NOT able to save user in DB",
       });

@@ -19,7 +19,7 @@ exports.addTodo = (req, res) => {
   todo.save((err, data) => {
     if (err) {
       return res.status(400).json({
-        err: "Unable to save todo",
+        error: "Unable to save todo",
       });
     }
     res.json(data);
