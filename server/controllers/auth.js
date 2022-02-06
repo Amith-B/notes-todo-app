@@ -115,7 +115,7 @@ const commonUserCheck = [
 ];
 
 exports.validateNewUser = [
-  check("name", "name should be min 1 char").isLength({ min: 1 }),
+  check("name", "name is required").trim().isLength({ min: 1 }),
   ...commonUserCheck,
 ];
 
