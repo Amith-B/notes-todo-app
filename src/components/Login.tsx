@@ -7,22 +7,22 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import http from "./../helpers/httpService";
 import CircularProgress from "@mui/material/CircularProgress";
 import { SIGNIN } from "../models/Api";
+import http from "../helpers/httpService";
+import { LoginDetails } from "../models/Auth";
+import { AxiosError } from "axios";
 
 function Login() {
-  const [loginDetails, setLoginDetails] = useState({
+  const [loginDetails, setLoginDetails] = useState<LoginDetails>({
     email: "",
     password: "",
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<Partial<LoginDetails>>({});
 
-  const updateDetails = (currentData: {
-    email?: string;
-    password?: string;
-  }) => {
+  const updateDetails = (currentData: Partial<LoginDetails>) => {
     setLoginDetails((prevData) => ({
       ...prevData,
       ...currentData,
@@ -30,11 +30,16 @@ function Login() {
   };
 
   const login = async () => {
+    setError({});
     setIsLoading(true);
     try {
       const response = await http.post(SIGNIN, loginDetails);
       console.log(loginDetails, response);
-    } catch (error) {}
+    } catch (error: AxiosError | any) {
+      if (error?.response?.data?.error) {
+        setError(error.response.data.error);
+      }
+    }
     setIsLoading(false);
   };
 
@@ -58,6 +63,8 @@ function Login() {
         }}
       >
         <TextField
+          error={!!error?.email}
+          helperText={error?.email}
           id="outlined-email"
           size="small"
           label="Email"
@@ -71,13 +78,13 @@ function Login() {
               </InputAdornment>
             ),
           }}
-          sx={{
-            margin: "10px",
-          }}
+          margin="normal"
           variant="outlined"
         />
 
         <TextField
+          error={!!error?.password}
+          helperText={error?.password}
           id="outlined-password"
           size="small"
           label="Password"
@@ -91,9 +98,7 @@ function Login() {
               </InputAdornment>
             ),
           }}
-          sx={{
-            margin: "10px",
-          }}
+          margin="normal"
           variant="outlined"
         />
         <Box
@@ -104,13 +109,15 @@ function Login() {
         >
           <Button
             variant="contained"
-            sx={{ margin: "10px", width: "100%" }}
+            sx={{ margin: "10px", marginLeft: 0, width: "100%" }}
             onClick={login}
             disabled={isLoading}
           >
             Login
             {isLoading && (
-              <CircularProgress size={16} sx={{ marginLeft: "10px" }} />
+              <div style={{ marginLeft: "10px", display: "flex" }}>
+                <CircularProgress size={16} />
+              </div>
             )}
           </Button>
 
@@ -119,6 +126,7 @@ function Login() {
               textDecoration: "none",
               color: "unset",
               margin: "10px",
+              marginRight: 0,
               width: "100%",
             }}
             to="/register"

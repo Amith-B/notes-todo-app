@@ -50,10 +50,17 @@ exports.signin = (req, res) => {
 
   User.findOne({ email }, (error, user) => {
     if (error || !user) {
-      return res.status(400).json({ error: "USER email doesn't exist" });
+      return res
+        .status(400)
+        .json({ error: { email: "email id doesn't exist" } });
     }
     if (!user.authenticate(password)) {
-      return res.status(401).json({ error: "Email and password don't match" });
+      return res.status(401).json({
+        error: {
+          email: "Email and password don't match",
+          password: "Email and password don't match",
+        },
+      });
     }
 
     const token = jwt.sign({ _id: user._id }, process.env.SECRET, {
@@ -104,14 +111,11 @@ exports.isAuthenticated = (req, res, next) => {
 
 const commonUserCheck = [
   check("email", "email is required").isEmail(),
-  check(
-    "password",
-    "password field is required with minimum of 5 characters"
-  ).isLength({ min: 5 }),
+  check("password", "password should be min 5 chars").isLength({ min: 5 }),
 ];
 
 exports.validateNewUser = [
-  check("name", "name should be at least 1 char").isLength({ min: 1 }),
+  check("name", "name should be min 1 char").isLength({ min: 1 }),
   ...commonUserCheck,
 ];
 
