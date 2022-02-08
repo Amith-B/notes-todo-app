@@ -13,7 +13,12 @@ import BorderColorIcon from "@mui/icons-material/BorderColor";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, LinkProps, useMatch, useResolvedPath } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { logout, selectIsLoggedIn } from "../store/reducers/authSlice";
+import {
+  logout,
+  selectIsLoggedIn,
+  selectProfile,
+} from "../store/reducers/authSlice";
+import { stringAvatar } from "../helpers/stringUtils";
 
 const pages = [
   {
@@ -59,6 +64,7 @@ function CustomLink({
 
 const AppBar = () => {
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
+  const profile = useAppSelector(selectProfile);
   const dispatch = useAppDispatch();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -185,9 +191,17 @@ const AppBar = () => {
 
           {isLoggedIn && (
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
+              <Tooltip
+                title={
+                  <>
+                    {profile.user.name}
+                    <br />
+                    {profile.user.email}
+                  </>
+                }
+              >
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" />
+                  <Avatar {...stringAvatar(profile.user.name)} />
                 </IconButton>
               </Tooltip>
               <Menu
