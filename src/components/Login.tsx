@@ -8,10 +8,13 @@ import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
-import { SIGNIN } from "../models/Api";
-import http from "../helpers/httpService";
 import { LoginDetails } from "../models/Auth";
-import { AxiosError } from "axios";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  signIn,
+  selectLoginStatus,
+  selectLoginError,
+} from "../store/reducers/authSlice";
 
 function Login() {
   const [loginDetails, setLoginDetails] = useState<LoginDetails>({
@@ -19,8 +22,9 @@ function Login() {
     password: "",
   });
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Partial<LoginDetails>>({});
+  const dispatch = useAppDispatch();
+  const loginStatus = useAppSelector(selectLoginStatus);
+  const error = useAppSelector(selectLoginError);
 
   const updateDetails = (currentData: Partial<LoginDetails>) => {
     setLoginDetails((prevData) => ({
@@ -29,18 +33,8 @@ function Login() {
     }));
   };
 
-  const login = async () => {
-    setError({});
-    setIsLoading(true);
-    try {
-      const response = await http.post(SIGNIN, loginDetails);
-      console.log(loginDetails, response);
-    } catch (error: AxiosError | any) {
-      if (error?.response?.data?.error) {
-        setError(error.response.data.error);
-      }
-    }
-    setIsLoading(false);
+  const login = () => {
+    dispatch(signIn(loginDetails));
   };
 
   return (
@@ -111,10 +105,10 @@ function Login() {
             variant="contained"
             sx={{ margin: "10px", marginLeft: 0, width: "100%" }}
             onClick={login}
-            disabled={isLoading}
+            disabled={loginStatus === "loading"}
           >
             Login
-            {isLoading && (
+            {loginStatus === "loading" && (
               <div style={{ marginLeft: "10px", display: "flex" }}>
                 <CircularProgress size={16} />
               </div>

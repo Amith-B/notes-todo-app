@@ -8,11 +8,14 @@ import PersonIcon from "@mui/icons-material/Person";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { SIGNUP } from "../models/Api";
-import http from "./../helpers/httpService";
 import CircularProgress from "@mui/material/CircularProgress";
 import { RegisterDetails } from "../models/Auth";
-import { AxiosError } from "axios";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  signUp,
+  selectRegisterStatus,
+  selectRegisterError,
+} from "../store/reducers/authSlice";
 
 function Register() {
   const [signupDetails, setSignupDetails] = useState<RegisterDetails>({
@@ -20,28 +23,20 @@ function Register() {
     email: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Partial<RegisterDetails>>({});
 
-  const register = async () => {
-    setError({});
-    setIsLoading(true);
-    try {
-      const response = await http.post(SIGNUP, signupDetails);
-      console.log(signupDetails, response);
-    } catch (error: AxiosError | any) {
-      if (error?.response?.data?.error) {
-        setError(error.response.data.error);
-      }
-    }
-    setIsLoading(false);
-  };
+  const dispatch = useAppDispatch();
+  const registerStatus = useAppSelector(selectRegisterStatus);
+  const error = useAppSelector(selectRegisterError);
 
   const updateDetails = (currentData: Partial<RegisterDetails>) => {
     setSignupDetails((prevData) => ({
       ...prevData,
       ...currentData,
     }));
+  };
+
+  const register = () => {
+    dispatch(signUp(signupDetails));
   };
 
   return (
@@ -127,10 +122,10 @@ function Register() {
             variant="contained"
             sx={{ margin: "10px", marginLeft: 0, width: "100%" }}
             onClick={register}
-            disabled={isLoading}
+            disabled={registerStatus === "loading"}
           >
             Register
-            {isLoading && (
+            {registerStatus === "loading" && (
               <div style={{ marginLeft: "10px", display: "flex" }}>
                 <CircularProgress size={16} />
               </div>

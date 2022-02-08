@@ -6,12 +6,14 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Register from "./components/Register";
+import { useAppSelector } from "./store/hooks";
+import { selectIsLoggedIn } from "./store/reducers/authSlice";
 
 function App() {
-  const loggedIn = false;
+  const isLoggedIn = useAppSelector(selectIsLoggedIn);
 
   const Authenticate = (component: JSX.Element) => {
-    return loggedIn ? component : <Navigate replace to="/login" />;
+    return isLoggedIn ? component : <Navigate replace to="/login" />;
   };
   return (
     <Box
@@ -35,7 +37,7 @@ function App() {
           <Route
             path="/"
             element={
-              loggedIn ? (
+              isLoggedIn ? (
                 <Navigate replace to="/notes" />
               ) : (
                 <Navigate replace to="/login" />
@@ -44,11 +46,13 @@ function App() {
           />
           <Route
             path="login"
-            element={loggedIn ? <Navigate replace to="/notes" /> : <Login />}
+            element={isLoggedIn ? <Navigate replace to="/notes" /> : <Login />}
           />
           <Route
             path="register"
-            element={loggedIn ? <Navigate replace to="/notes" /> : <Register />}
+            element={
+              isLoggedIn ? <Navigate replace to="/notes" /> : <Register />
+            }
           />
           <Route path="notes" element={Authenticate(<NoteList />)} />
           <Route path="todo" element={Authenticate(<TodoList />)} />
