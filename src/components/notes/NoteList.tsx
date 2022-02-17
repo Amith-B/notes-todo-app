@@ -1,8 +1,28 @@
 import "./NoteList.css";
 import Note from "./Note";
+import React from "react";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  getNotes,
+  Notes,
+  selectNotes,
+  selectNotesStatus,
+} from "../../store/reducers/notesSlice";
 
 function NoteList() {
-  const noteList = Array.from(Array(40).keys());
+  const dispatch = useAppDispatch();
+  const notes = useAppSelector(selectNotes);
+  const notesStatus = useAppSelector(selectNotesStatus);
+  const [notesList, setNotesList] = React.useState<Notes[]>([]);
+
+  React.useEffect(() => {
+    dispatch(getNotes(1));
+  }, []);
+
+  React.useEffect(() => {
+    setNotesList(notes);
+  }, [notes]);
+
   return (
     <div
       style={{
@@ -11,15 +31,15 @@ function NoteList() {
         placeContent: "center space-around",
       }}
     >
-      {noteList.map((note, index) => {
+      {notesList.map((note) => {
         return (
           <Note
-            key={`${index}`}
-            heading="Heading"
-            noteId={`${note}`}
-            content="Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vero, dicta nostrum quaerat rem labore excepturi necessitatibus tempora. Officiis maxime deserunt explicabo minus praesentium placeat nulla. Amet dolore in nulla nesciunt!"
-            color={`${note % 6}`}
-            dateCreated={new Date()}
+            key={note._id}
+            heading={note.title}
+            noteId={note._id}
+            content={note.content}
+            color={"" + note.color}
+            dateCreated={new Date(note.createdAt)}
             onColorChange={(color: string) => console.log(color)}
             onClick={(noteId: string) => console.log(note)}
           />

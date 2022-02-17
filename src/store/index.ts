@@ -6,7 +6,7 @@ const { authReducer, notesReducer, todoReducer } = reducers;
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    // notes: notesReducer,
+    notes: notesReducer,
     // todo: todoReducer,
   },
 });

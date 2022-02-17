@@ -122,6 +122,7 @@ export const authSlice = createSlice({
 export const { logout } = authSlice.actions;
 
 export const selectProfile = (state: RootState) => state.auth.login.data;
+export const selectToken = (state: RootState) => state.auth.login.data.token;
 export const selectLoginError = (state: RootState) => state.auth.login.error;
 export const selectIsLoggedIn = (state: RootState) =>
   state.auth.login.isLoggedIn;

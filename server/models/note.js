@@ -10,10 +10,9 @@ const noteSchema = new mongoose.Schema(
     title: { type: String, maxlength: 32, trim: true },
     content: { type: String, maxlength: 1000, trim: true },
     color: {
-      type: String,
-      trim: true,
-      default: "#ffffff",
-      enum: ["yellow", "red", "lightblue", "orange", "#ffffff", "black"],
+      type: Number,
+      default: 0,
+      enum: [0, 1, 2, 3, 4, 5],
     },
   },
   { timestamps: true }
