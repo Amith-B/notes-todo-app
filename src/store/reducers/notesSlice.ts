@@ -1,37 +1,29 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { NOTES } from "../../models/Api";
+import { NOTES as NOTESAPI } from "../../models/Api";
 import http from "../../helpers/httpService";
 import { selectToken } from "./authSlice";
 import { RootState } from "..";
-import { UpdateNotesPayload } from "../../models/Note";
-
-export interface Notes {
-  color: number;
-  content: string;
-  createdAt: string;
-  title: string;
-  updatedAt: string;
-  user: string;
-  _id: string;
-}
+import { Notes, UpdateNotesPayload } from "../../models/Note";
 
 export interface NotesState {
   data: Notes[];
   status: "idle" | "loading" | "failed";
   page: number;
+  isNoteOpen: boolean;
 }
 
 const initialState: NotesState = {
   data: [],
   status: "idle",
   page: 0,
+  isNoteOpen: false,
 };
 
 export const getNotes = createAsyncThunk(
   "notes/getNotes",
   async (page: number, { getState }) => {
     const authToken = selectToken(getState() as RootState);
-    const response = await http.get(`${NOTES}`, {
+    const response = await http.get(`${NOTESAPI}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -48,7 +40,7 @@ export const updateNotes = createAsyncThunk(
   ) => {
     const authToken = selectToken(getState() as RootState);
     const response = await http.patch(
-      `${NOTES}/${payload.noteId}`,
+      `${NOTESAPI}/${payload.noteId}`,
       payload.data,
       {
         headers: {
@@ -64,7 +56,7 @@ export const deleteNotes = createAsyncThunk(
   "notes/deleteNotes",
   async (noteId: string, { getState }) => {
     const authToken = selectToken(getState() as RootState);
-    const response = await http.delete(`${NOTES}/${noteId}`, {
+    const response = await http.delete(`${NOTESAPI}/${noteId}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
@@ -76,7 +68,11 @@ export const deleteNotes = createAsyncThunk(
 export const notesSlice = createSlice({
   name: "notes",
   initialState,
-  reducers: {},
+  reducers: {
+    setEditNoteVisiblity: (state, { payload }) => {
+      state.isNoteOpen = payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getNotes.pending, (state) => {
@@ -102,7 +98,7 @@ export const notesSlice = createSlice({
             note.updatedAt = action.payload.updatedAt;
           }
         });
-
+        state.isNoteOpen = false;
         state.data.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
       })
       .addCase(updateNotes.rejected, (state, action) => {
@@ -124,8 +120,11 @@ export const notesSlice = createSlice({
 });
 
 export const selectNotes = (state: RootState) => state.notes.data;
+export const selectNoteById = (notes: Notes[], noteId: string) =>
+  notes.find((note) => note._id === noteId);
 export const selectNotesStatus = (state: RootState) => state.notes.status;
+export const selectIsNoteOpen = (state: RootState) => state.notes.isNoteOpen;
 
-// export const { getNotes, getNote,updateColor, updateNote, deleteNote, addNote } = notesSlice.actions;
+export const { setEditNoteVisiblity } = notesSlice.actions;
 
 export default notesSlice.reducer;

@@ -27,3 +27,7 @@ export function stringAvatar(name: string) {
     children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
   };
 }
+
+export const fontColor = (colorIndex: number) => {
+  return colorIndex === 1 || colorIndex === 3 ? "white" : "black";
+};

@@ -7,7 +7,8 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Radio from "@mui/material/Radio";
 import Box from "@mui/material/Box";
-import { COLORS, NoteInput } from "../../models/Note";
+import { COLORS, NoteProps } from "../../models/Note";
+import { fontColor } from "../../helpers";
 
 export default function Note({
   noteId,
@@ -18,17 +19,13 @@ export default function Note({
   onColorChange,
   onClick,
   onDelete,
-}: NoteInput) {
+}: NoteProps) {
   const [selectedColor, setSelectedColor] = React.useState(color);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
     setSelectedColor(+event.target.value);
     onColorChange(noteId, event.target.value);
-  };
-
-  const fontColor = (colorIndex: number) => {
-    return colorIndex === 1 || colorIndex === 3 ? "white" : "black";
   };
 
   const controlProps = (item: number) => ({

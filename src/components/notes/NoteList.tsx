@@ -5,12 +5,16 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   deleteNotes,
   getNotes,
-  Notes,
+  selectNoteById,
   selectNotes,
   selectNotesStatus,
   updateNotes,
+  selectIsNoteOpen,
+  setEditNoteVisiblity,
 } from "../../store/reducers/notesSlice";
 import Alert from "../Alert";
+import EditNote from "../EditNote";
+import { AddNotesPayload, Notes } from "../../models/Note";
 
 function NoteList() {
   const dispatch = useAppDispatch();
@@ -18,7 +22,11 @@ function NoteList() {
   const notesStatus = useAppSelector(selectNotesStatus);
   const [notesList, setNotesList] = React.useState<Notes[]>([]);
   const [activeNoteId, setActiveNoteId] = React.useState<string | undefined>();
+  const [activeNoteDetails, setActiveNoteDetails] = React.useState<
+    Notes | undefined
+  >();
   const [alertOpen, setAlertOpen] = React.useState<boolean>(false);
+  const isNoteOpen = useAppSelector(selectIsNoteOpen);
 
   React.useEffect(() => {
     dispatch(getNotes(1));
@@ -49,6 +57,36 @@ function NoteList() {
     setAlertOpen(false);
   };
 
+  const handleNoteClose = () => {
+    setActiveNoteDetails(undefined);
+    dispatch(setEditNoteVisiblity(false));
+  };
+
+  const handleNoteClick = (noteId: string) => {
+    setActiveNoteDetails(selectNoteById(notes, noteId));
+    dispatch(setEditNoteVisiblity(true));
+  };
+
+  const handleSave = (note: AddNotesPayload) => {
+    const updateDetails: Partial<AddNotesPayload> = {};
+    if (activeNoteDetails) {
+      let modified = false;
+      if (activeNoteDetails.title !== note.title) {
+        updateDetails.title = note.title;
+        modified = true;
+      }
+      if (activeNoteDetails.content !== note.content) {
+        updateDetails.content = note.content;
+        modified = true;
+      }
+      if (modified) {
+        dispatch(
+          updateNotes({ noteId: activeNoteDetails._id, data: updateDetails })
+        );
+      }
+    }
+  };
+
   return (
     <div
       style={{
@@ -69,7 +107,7 @@ function NoteList() {
             onColorChange={(noteId: string, color: string) => {
               dispatch(updateNotes({ noteId, data: { color: +color } }));
             }}
-            onClick={(noteId: string) => console.log(noteId)}
+            onClick={handleNoteClick}
             onDelete={(noteId: string) => {
               handleDelete(noteId);
             }}
@@ -86,6 +124,12 @@ function NoteList() {
         onAgree={handleAgree}
         onDisagree={handleDisAgree}
         actionText={{ agree: "Delete", disAgree: "Cancel" }}
+      />
+      <EditNote
+        open={isNoteOpen}
+        handleClose={handleNoteClose}
+        handleSave={handleSave}
+        note={activeNoteDetails}
       />
     </div>
   );

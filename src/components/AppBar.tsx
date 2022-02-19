@@ -18,7 +18,7 @@ import {
   selectIsLoggedIn,
   selectProfile,
 } from "../store/reducers/authSlice";
-import { stringAvatar } from "../helpers/stringUtils";
+import { stringAvatar } from "../helpers";
 
 const pages = [
   {

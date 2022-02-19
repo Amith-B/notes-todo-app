@@ -9,7 +9,7 @@ export const COLORS: Array<string> = [
   orange["600"],
 ];
 
-export interface NoteInput {
+export interface NoteProps {
   noteId: string;
   title: string;
   content: string;
@@ -20,6 +20,29 @@ export interface NoteInput {
   onDelete: (noteId: string) => void;
 }
 
-export type AddNotesPayload = Pick<NoteInput, "color" | "content" | "title">;
+export type AddNotesPayload = Pick<NoteProps, "color" | "content" | "title">;
 
 export type UpdateNotesPayload = Partial<AddNotesPayload>;
+
+export const DefaultNoteContent: AddNotesPayload = {
+  title: "",
+  content: "",
+  color: 0,
+};
+
+export interface EditNoteProps {
+  handleClose: () => void;
+  handleSave: (note: AddNotesPayload) => void;
+  open: boolean;
+  note?: AddNotesPayload | Notes;
+}
+
+export interface Notes {
+  color: number;
+  content: string;
+  createdAt: string;
+  title: string;
+  updatedAt: string;
+  user: string;
+  _id: string;
+}
