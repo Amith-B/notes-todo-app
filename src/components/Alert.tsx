@@ -1,53 +1,39 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
-import { TransitionProps } from "@mui/material/transitions";
-import { AlertDialogProps } from "../models";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert, { AlertProps } from "@mui/material/Alert";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { closeAlert, selectAlert } from "../store/reducers/commonSlice";
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+const AlertMessage = React.forwardRef<HTMLDivElement, AlertProps>(
+  function Alert(props, ref) {
+    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  }
+);
 
-export default function Alert({
-  open,
-  title,
-  description,
-  handleClose,
-  onDisagree,
-  onAgree,
-  actionText,
-}: AlertDialogProps) {
-  const { agree = "Ok", disAgree = "Cancel" } = actionText || {};
+export default function Alert() {
+  const alert = useAppSelector(selectAlert);
+  const dispatch = useAppDispatch();
+
+  const handleClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    dispatch(closeAlert());
+  };
+
   return (
-    <div>
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
+    <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleClose}>
+      <AlertMessage
         onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
+        severity={alert.type}
+        sx={{ width: "100%" }}
       >
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            {description}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onDisagree}>{disAgree}</Button>
-          <Button onClick={onAgree}>{agree}</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        {alert.message}
+      </AlertMessage>
+    </Snackbar>
   );
 }

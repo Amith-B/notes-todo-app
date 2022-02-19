@@ -7,6 +7,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Register from "./components/Register";
 import { useAppSelector } from "./store/hooks";
 import { selectIsLoggedIn } from "./store/reducers/authSlice";
+import Alert from "./components/Alert";
 
 function App() {
   const isLoggedIn = useAppSelector(selectIsLoggedIn);
@@ -57,6 +58,7 @@ function App() {
           <Route path="todo" element={Authenticate(<TodoList />)} />
         </Routes>
       </Container>
+      <Alert />
     </Box>
   );
 }

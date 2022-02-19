@@ -12,9 +12,12 @@ import {
   selectIsNoteOpen,
   setEditNoteVisiblity,
 } from "../../store/reducers/notesSlice";
-import Alert from "../Alert";
-import EditNote from "../EditNote";
+import Alert from "../Dialog";
+import EditNote from "./EditNote";
 import { AddNotesPayload, Notes } from "../../models/Note";
+import { Fab, LinearProgress } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { openAlert } from "../../store/reducers/commonSlice";
 
 function NoteList() {
   const dispatch = useAppDispatch();
@@ -83,55 +86,85 @@ function NoteList() {
         dispatch(
           updateNotes({ noteId: activeNoteDetails._id, data: updateDetails })
         );
+      } else {
+        dispatch(
+          openAlert({
+            type: "warning",
+            message: "Saving without modification is not allowed",
+          })
+        );
+        dispatch(setEditNoteVisiblity(false));
       }
     }
+
+    setActiveNoteDetails(undefined);
+  };
+
+  const handleAddNote = () => {
+    dispatch(setEditNoteVisiblity(true));
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        placeContent: "center space-around",
-      }}
-    >
-      {notesList.map((note) => {
-        return (
-          <Note
-            key={note._id}
-            title={note.title}
-            noteId={note._id}
-            content={note.content}
-            color={note.color}
-            dateUpdated={new Date(note.updatedAt)}
-            onColorChange={(noteId: string, color: string) => {
-              dispatch(updateNotes({ noteId, data: { color: +color } }));
-            }}
-            onClick={handleNoteClick}
-            onDelete={(noteId: string) => {
-              handleDelete(noteId);
-            }}
-          />
-        );
-      })}
-      <Alert
-        open={alertOpen}
-        title={"Are you sure you want to delete this note?"}
-        description={
-          "Deleting this note cannot be undone. So please be sure of this action."
-        }
-        handleClose={handleAlertClose}
-        onAgree={handleAgree}
-        onDisagree={handleDisAgree}
-        actionText={{ agree: "Delete", disAgree: "Cancel" }}
-      />
-      <EditNote
-        open={isNoteOpen}
-        handleClose={handleNoteClose}
-        handleSave={handleSave}
-        note={activeNoteDetails}
-      />
-    </div>
+    <>
+      {notesStatus === "loading" && <LinearProgress />}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          placeContent: "center",
+        }}
+      >
+        {notesList.map((note) => {
+          return (
+            <Note
+              key={note._id}
+              title={note.title}
+              noteId={note._id}
+              content={note.content}
+              color={note.color}
+              dateUpdated={new Date(note.updatedAt)}
+              onColorChange={(noteId: string, color: string) => {
+                dispatch(updateNotes({ noteId, data: { color: +color } }));
+              }}
+              onClick={handleNoteClick}
+              onDelete={(noteId: string) => {
+                handleDelete(noteId);
+              }}
+            />
+          );
+        })}
+        <Alert
+          open={alertOpen}
+          title={"Are you sure you want to delete this note?"}
+          description={
+            "Deleting this note cannot be undone. So please be sure of this action."
+          }
+          handleClose={handleAlertClose}
+          onAgree={handleAgree}
+          onDisagree={handleDisAgree}
+          actionText={{ agree: "Delete", disAgree: "Cancel" }}
+        />
+        <EditNote
+          open={isNoteOpen}
+          handleClose={handleNoteClose}
+          handleSave={handleSave}
+          note={activeNoteDetails}
+        />
+        <Fab
+          sx={{
+            position: "fixed",
+            right: 20,
+            bottom: 20,
+          }}
+          size="medium"
+          color="secondary"
+          aria-label="add"
+          onClick={handleAddNote}
+        >
+          <AddIcon />
+        </Fab>
+      </div>{" "}
+    </>
   );
 }
 

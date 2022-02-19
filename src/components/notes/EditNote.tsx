@@ -7,7 +7,7 @@ import {
   DefaultNoteContent,
   EditNoteProps,
   Notes,
-} from "../models/Note";
+} from "../../models/Note";
 import {
   AppBar,
   Box,
@@ -21,8 +21,11 @@ import {
   TextField,
   TextareaAutosize,
   Divider,
+  LinearProgress,
 } from "@mui/material";
-import { fontColor } from "../helpers";
+import { fontColor } from "../../helpers";
+import { selectNotesStatus } from "../../store/reducers/notesSlice";
+import { useAppSelector } from "../../store/hooks";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -42,6 +45,8 @@ export default function EditNote({
   const [noteDetails, setNoteDetails] = React.useState<AddNotesPayload | Notes>(
     note || DefaultNoteContent
   );
+
+  const notesStatus = useAppSelector(selectNotesStatus);
 
   React.useEffect(() => {
     if (note) {
@@ -96,6 +101,7 @@ export default function EditNote({
               </Button>
             </Toolbar>
           </AppBar>
+          {notesStatus === "loading" && <LinearProgress />}
           <Container
             maxWidth="xl"
             sx={{
@@ -145,6 +151,10 @@ export default function EditNote({
                 height: "calc(100% - 150px)",
                 background: COLORS[noteDetails.color],
                 color: fontColor(noteDetails.color),
+                border: `1px solid ${fontColor(noteDetails.color)}`,
+                borderRadius: "4px",
+                padding: "14px",
+                fontSize: "1rem",
               }}
             />
           </Container>
