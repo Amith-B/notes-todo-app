@@ -11,32 +11,33 @@ import { COLORS, NoteInput } from "../../models/Note";
 
 export default function Note({
   noteId,
-  heading,
+  title,
   content,
   color,
-  dateCreated,
+  dateUpdated,
   onColorChange,
   onClick,
+  onDelete,
 }: NoteInput) {
   const [selectedColor, setSelectedColor] = React.useState(color);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
-    setSelectedColor(event.target.value);
-    onColorChange(event.target.value);
+    setSelectedColor(+event.target.value);
+    onColorChange(noteId, event.target.value);
   };
 
-  const fontColor = (colorIndex: string) => {
-    return colorIndex === "1" || colorIndex === "3" ? "white" : "black";
+  const fontColor = (colorIndex: number) => {
+    return colorIndex === 1 || colorIndex === 3 ? "white" : "black";
   };
 
-  const controlProps = (item: string) => ({
+  const controlProps = (item: number) => ({
     checked: selectedColor === item,
     onChange: handleChange,
-    value: item,
+    value: `${item}`,
     name: "color-radio-button",
     size: "small" as const,
-    inputProps: { "aria-label": item },
+    inputProps: { "aria-label": `${item}` },
     sx: { ...colorProps(COLORS[item]) },
   });
 
@@ -80,11 +81,12 @@ export default function Note({
             cursor: "unset",
           }}
         >
-          {Object.keys(COLORS).map((colorKey) => (
-            <Radio key={colorKey} {...controlProps(colorKey)} />
+          {COLORS.map((colorKey, colorIndex) => (
+            <Radio key={colorKey} {...controlProps(colorIndex)} />
           ))}
         </span>
         <IconButton
+          onClick={() => onDelete(noteId)}
           sx={{
             marginLeft: "auto",
             color: fontColor(selectedColor),
@@ -105,7 +107,7 @@ export default function Note({
       >
         <CardContent sx={{ padding: "0 16px", paddingBottom: "0 !important" }}>
           <Typography variant="h5" component="div">
-            {heading}
+            {title}
           </Typography>
           <Typography variant="body2">{getTrimmedContent(content)}</Typography>
         </CardContent>
@@ -117,7 +119,7 @@ export default function Note({
             padding: "0 16px 8px 0",
           }}
         >
-          {dateCreated.toLocaleString()}
+          {dateUpdated.toLocaleString()}
         </Typography>
       </Box>
     </Card>
