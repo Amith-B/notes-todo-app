@@ -11,8 +11,9 @@ import {
   updateNotes,
   selectIsNoteOpen,
   setEditNoteVisiblity,
+  addNotes,
 } from "../../store/reducers/notesSlice";
-import Alert from "../Dialog";
+import Dialog from "../Dialog";
 import EditNote from "./EditNote";
 import { AddNotesPayload, Notes } from "../../models/Note";
 import { Fab, LinearProgress } from "@mui/material";
@@ -28,7 +29,7 @@ function NoteList() {
   const [activeNoteDetails, setActiveNoteDetails] = React.useState<
     Notes | undefined
   >();
-  const [alertOpen, setAlertOpen] = React.useState<boolean>(false);
+  const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
   const isNoteOpen = useAppSelector(selectIsNoteOpen);
 
   React.useEffect(() => {
@@ -41,7 +42,7 @@ function NoteList() {
 
   const handleDelete = (noteId: string) => {
     setActiveNoteId(noteId);
-    setAlertOpen(true);
+    setDialogOpen(true);
   };
 
   const handleAgree = () => {
@@ -57,7 +58,7 @@ function NoteList() {
 
   const handleAlertClose = () => {
     setActiveNoteId(undefined);
-    setAlertOpen(false);
+    setDialogOpen(false);
   };
 
   const handleNoteClose = () => {
@@ -70,7 +71,16 @@ function NoteList() {
     dispatch(setEditNoteVisiblity(true));
   };
 
-  const handleSave = (note: AddNotesPayload) => {
+  const handleSave = (note: AddNotesPayload, mode: "edit" | "add") => {
+    if (mode === "edit") {
+      handleSaveEditedNotes(note);
+    } else {
+      handleSaveNewNotes(note);
+    }
+    setActiveNoteDetails(undefined);
+  };
+
+  const handleSaveEditedNotes = (note: AddNotesPayload) => {
     const updateDetails: Partial<AddNotesPayload> = {};
     if (activeNoteDetails) {
       let modified = false;
@@ -96,8 +106,11 @@ function NoteList() {
         dispatch(setEditNoteVisiblity(false));
       }
     }
+  };
 
-    setActiveNoteDetails(undefined);
+  const handleSaveNewNotes = (note: AddNotesPayload) => {
+    console.log(note);
+    dispatch(addNotes(note));
   };
 
   const handleAddNote = () => {
@@ -133,8 +146,8 @@ function NoteList() {
             />
           );
         })}
-        <Alert
-          open={alertOpen}
+        <Dialog
+          open={dialogOpen}
           title={"Are you sure you want to delete this note?"}
           description={
             "Deleting this note cannot be undone. So please be sure of this action."

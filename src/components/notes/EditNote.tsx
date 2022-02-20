@@ -43,7 +43,7 @@ export default function EditNote({
   note,
 }: EditNoteProps) {
   const [noteDetails, setNoteDetails] = React.useState<AddNotesPayload | Notes>(
-    note || DefaultNoteContent
+    note || { ...DefaultNoteContent }
   );
 
   const notesStatus = useAppSelector(selectNotesStatus);
@@ -54,7 +54,7 @@ export default function EditNote({
     } else {
       setNoteDetails(DefaultNoteContent);
     }
-  }, [note]);
+  }, [note, open]);
 
   const updateDetails = (currentData: Partial<AddNotesPayload>) => {
     setNoteDetails((prevData) => ({
@@ -95,7 +95,7 @@ export default function EditNote({
               <Button
                 autoFocus
                 color="inherit"
-                onClick={() => handleSave(noteDetails)}
+                onClick={() => handleSave(noteDetails, note ? "edit" : "add")}
               >
                 Save
               </Button>

@@ -32,7 +32,7 @@ export const DefaultNoteContent: AddNotesPayload = {
 
 export interface EditNoteProps {
   handleClose: () => void;
-  handleSave: (note: AddNotesPayload) => void;
+  handleSave: (note: AddNotesPayload, mode: "edit" | "add") => void;
   open: boolean;
   note?: AddNotesPayload | Notes;
 }

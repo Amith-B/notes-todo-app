@@ -3,7 +3,8 @@ import { NOTES as NOTESAPI } from "../../models/Api";
 import http from "../../helpers/httpService";
 import { selectToken } from "./authSlice";
 import { RootState } from "..";
-import { Notes, UpdateNotesPayload } from "../../models/Note";
+import { AddNotesPayload, Notes, UpdateNotesPayload } from "../../models/Note";
+import { openAlert } from "./commonSlice";
 
 export interface NotesState {
   data: Notes[];
@@ -32,11 +33,30 @@ export const getNotes = createAsyncThunk(
   }
 );
 
+export const addNotes = createAsyncThunk(
+  "notes/addNotes",
+  async (note: AddNotesPayload, { dispatch, getState }) => {
+    const authToken = selectToken(getState() as RootState);
+    const response = await http.post(`${NOTESAPI}`, note, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    dispatch(
+      openAlert({
+        type: "success",
+        message: "Success in adding the note",
+      })
+    );
+    return response.data;
+  }
+);
+
 export const updateNotes = createAsyncThunk(
   "notes/updateNotes",
   async (
     payload: { noteId: string; data: UpdateNotesPayload },
-    { getState }
+    { dispatch, getState }
   ) => {
     const authToken = selectToken(getState() as RootState);
     const response = await http.patch(
@@ -48,19 +68,36 @@ export const updateNotes = createAsyncThunk(
         },
       }
     );
+    const updatedKeys = Object.keys(payload.data);
+    dispatch(
+      openAlert({
+        type: "success",
+        message: `Success in updating the  ${
+          updatedKeys.length === 1 && updatedKeys[0] === "color"
+            ? "color"
+            : "note"
+        }`,
+      })
+    );
     return response.data;
   }
 );
 
 export const deleteNotes = createAsyncThunk(
   "notes/deleteNotes",
-  async (noteId: string, { getState }) => {
+  async (noteId: string, { dispatch, getState }) => {
     const authToken = selectToken(getState() as RootState);
     const response = await http.delete(`${NOTESAPI}/${noteId}`, {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
     });
+    dispatch(
+      openAlert({
+        type: "success",
+        message: "Success in deleting the note",
+      })
+    );
     return response.data;
   }
 );
@@ -83,6 +120,18 @@ export const notesSlice = createSlice({
         state.data = action.payload;
       })
       .addCase(getNotes.rejected, (state) => {
+        state.status = "idle";
+      })
+      .addCase(addNotes.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(addNotes.fulfilled, (state, action) => {
+        state.status = "idle";
+        state.data.push(action.payload);
+        state.isNoteOpen = false;
+        state.data.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1));
+      })
+      .addCase(addNotes.rejected, (state) => {
         state.status = "idle";
       })
       .addCase(updateNotes.pending, (state) => {

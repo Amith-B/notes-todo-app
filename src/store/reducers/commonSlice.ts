@@ -19,7 +19,7 @@ const initialState: CommonState = {
 };
 
 export const commonSlice = createSlice({
-  name: "notes",
+  name: "common",
   initialState,
   reducers: {
     closeAlert: (state) => {
